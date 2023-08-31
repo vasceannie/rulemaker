@@ -37,7 +37,7 @@ def transform_data():
         active = "TRUE"  # Set active value if needed
         
         # Aggregate department IDs
-        deptids = "|".join([f"DeptID|oneOf||{'|'.join(group['DEPTID_CF'].unique())}"])
+        deptids = "|".join([f"DeptID|oneOf|{'|'.join(group['DEPTID_CF'].unique())}"])
         
         # Handle the spend values stored as text (assuming unique values per group)
         spend_values = group['SB_LIMIT_AMT'].iloc[0].split('-')
@@ -49,12 +49,12 @@ def transform_data():
             upper_limit = float(spend_values[1])
         document_total = f"Between|{lower_limit}|{upper_limit}|USD"
         
-        business_unit = "equalTo|CHXCO"
+        business_unit = "oneOf|CHXCO"
         
         # Append to the transformed data
         transformed_data.extend([
             [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
-            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueSingle", deptids],
+            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueMulti", deptids],
             [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "BusinessUnit", business_unit]
         ])
 
