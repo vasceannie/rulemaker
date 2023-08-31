@@ -37,9 +37,9 @@ def transform_data():
         else:
             lower_limit = float(spend_values[0]) + 0.01
             upper_limit = float(spend_values[1])
-        document_total = f"between|{lower_limit}|{upper_limit}|USD"
+        document_total = f"Between|{lower_limit}|{upper_limit}|USD"
         
-        business_unit = "equal|CHXCO"
+        business_unit = "equalTo|CHXCO"
         
         # Append to the transformed data
         transformed_data.extend([
