@@ -22,9 +22,19 @@ def transform_data():
 
     # Group by Rule Group and Rule Name
     for (sb_aprv_level, emplid), group in df.groupby(['SB_APRV_LEVEL', 'EMPLID']):
+    
+        rule_group_internal_name = f"DOA Approval: Level {sb_aprv_level}"
+        rule_group_display_name = f"DOA Approval: Level {sb_aprv_level}"
+        rule_group_description = ""  # Add description if needed
         
-        rule_group_name = f"DOA Approval: Level {sb_aprv_level}"
-        rule_name = f"DOA RULE: {emplid}"
+        rule_internal_name = f"DOA RULE: {emplid}"
+        rule_display_name = f"DOA RULE: {emplid}"
+        rule_description = ""  # Add description if needed
+        
+        rule_approvers = emplid  # Add approvers if needed
+        implicit_approvers = ""  # Add implicit approvers if needed
+        auto_approve = "FALSE"  # Set auto approve value if needed
+        active = "TRUE"  # Set active value if needed
         
         # Aggregate department IDs
         deptids = "|".join([f"DeptID|oneOf||{'|'.join(group['DEPTID_CF'].unique())}"])
@@ -43,13 +53,13 @@ def transform_data():
         
         # Append to the transformed data
         transformed_data.extend([
-            [rule_group_name, rule_name, "DocumentTotal", document_total],
-            [rule_group_name, rule_name, "CustomFieldValueSingle", deptids],
-            [rule_group_name, rule_name, "BusinessUnit", business_unit]
+            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
+            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueSingle", deptids],
+            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "BusinessUnit", business_unit]
         ])
 
     # Create a DataFrame from the transformed data
-    output_df = pd.DataFrame(transformed_data, columns=["Rule Group Name", "Rule Name", "Type", "Value"])
+    output_df = pd.DataFrame(transformed_data, columns=["Rule Group Internal Name", "Rule Group Display Name", "Rule Group Description", "Rule Internal Name", "Rule Display Name", "Rule Description", "Rule Approvers", "Implicit Approvers", "Auto Approve", "Active", "Type", "Value"])
 
     # Save the transformed data to the output file
     output_df.to_csv(output_file_path.get(), index=False)
