@@ -6,16 +6,18 @@ The program imports the required packages: tkinter, filedialog, ttk, and pandas.
 
 It defines three functions:
   A. select_source_file(): This function opens a file dialog to allow the user to select the source CSV file. The selected file path is stored in the source_file_path variable.
+  
   B. select_output_file(): This function opens a file dialog to allow the user to select the output CSV file location. The selected file path is stored in the output_file_path variable.
+  
   C. transform_data(): This function processes the data from the source file and saves the transformed data into the output file. It performs the following steps:
-    1. Reads the source CSV file using the pandas read_csv() function. It specifies the SB_LIMIT_AMT column to be read as a string.
-    2. Defines a placeholder for the transformed data.
-    3. Groups the data by the columns SB_APRV_LEVEL, CSU_CALSTEDUPERSID, and BUSINESS_UNIT.
-    4. Processes each group and generates the required values for each field.
-    5. Appends the transformed data to the placeholder list.
-    6. Creates a DataFrame from the transformed data using pandas.
-    7. Saves the DataFrame to the output CSV file using the to_csv() function.
-    8. Updates the progress bar value to 100.
+        1. Reads the source CSV file using the pandas read_csv() function. It specifies the SB_LIMIT_AMT column to be read as a string.
+        2. Defines a placeholder for the transformed data.
+        3. Groups the data by the columns SB_APRV_LEVEL, CSU_CALSTEDUPERSID, and BUSINESS_UNIT.
+        4. Processes each group and generates the required values for each field.
+        5. Appends the transformed data to the placeholder list.
+        6. Creates a DataFrame from the transformed data using pandas.
+        7. Saves the DataFrame to the output CSV file using the to_csv() function.
+        8. Updates the progress bar value to 100.
 
 After defining the functions, the program creates the main application window using tk.Tk(). It sets the title of the window to "ChicoDOA Transformer - CSV".
 
