@@ -5,9 +5,9 @@ The code is a Python program that utilizes the Tkinter library to create a GUI a
 The program imports the required packages: tkinter, filedialog, ttk, and pandas.
 
 It defines three functions:
-  > select_source_file(): This function opens a file dialog to allow the user to select the source CSV file. The selected file path is stored in the source_file_path variable.
-  > select_output_file(): This function opens a file dialog to allow the user to select the output CSV file location. The selected file path is stored in the output_file_path variable.
-  > transform_data(): This function processes the data from the source file and saves the transformed data into the output file. It performs the following steps:
+  A. select_source_file(): This function opens a file dialog to allow the user to select the source CSV file. The selected file path is stored in the source_file_path variable.
+  B. select_output_file(): This function opens a file dialog to allow the user to select the output CSV file location. The selected file path is stored in the output_file_path variable.
+  C. transform_data(): This function processes the data from the source file and saves the transformed data into the output file. It performs the following steps:
     1. Reads the source CSV file using the pandas read_csv() function. It specifies the SB_LIMIT_AMT column to be read as a string.
     2. Defines a placeholder for the transformed data.
     3. Groups the data by the columns SB_APRV_LEVEL, CSU_CALSTEDUPERSID, and BUSINESS_UNIT.
