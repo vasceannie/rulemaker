@@ -21,17 +21,17 @@ def transform_data():
     transformed_data = []
 
     # Group by Rule Group and Rule Name
-    for (sb_aprv_level, emplid), group in df.groupby(['SB_APRV_LEVEL', 'EMPLID']):
+    for (sb_aprv_level, csu_calstedupersid), group in df.groupby(['SB_APRV_LEVEL', 'CSU_CALSTEDUPERSID']):
     
         rule_group_internal_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_display_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_description = ""  # Add description if needed
         
-        rule_internal_name = f"DOA RULE: {emplid}"
-        rule_display_name = f"DOA RULE: {emplid}"
+        rule_internal_name = f"DOA RULE: {csu_calstedupersid}"
+        rule_display_name = f"DOA RULE: {csu_calstedupersid}"
         rule_description = ""  # Add description if needed
         
-        rule_approvers = emplid  # Add approvers if needed
+        rule_approvers = csu_calstedupersid  # Add approvers if needed
         implicit_approvers = ""  # Add implicit approvers if needed
         auto_approve = "FALSE"  # Set auto approve value if needed
         active = "TRUE"  # Set active value if needed
