@@ -21,7 +21,7 @@ def transform_data():
     transformed_data = []
 
     # Group by Rule Group and Rule Name
-    for (sb_aprv_level, csu_calstedupersid), group in df.groupby(['SB_APRV_LEVEL', 'CSU_CALSTEDUPERSID']):
+    for (sb_aprv_level, csu_calstedupersid, business_unit), group in df.groupby(['SB_APRV_LEVEL', 'CSU_CALSTEDUPERSID', 'BUSINESS_UNIT']):
     
         rule_group_internal_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_display_name = f"DOA Approval: Level {sb_aprv_level}"
@@ -49,7 +49,11 @@ def transform_data():
             upper_limit = float(spend_values[1])
         document_total = f"Between|{lower_limit}|{upper_limit}|USD"
         
-        business_unit = "oneOf|CHXCO"
+        #check for business unit, if it's chico, then the value is CHXCO, if it's fresno, then the value is FRXNO|FRXTH
+        if business_unit == "CHICO":
+            business_unit = "oneOf|CHXCO"
+        elif business_unit == "FRESNO":
+            business_unit = "oneOf|FRXNO|FRXTH"
         
         # Append to the transformed data
         transformed_data.extend([
