@@ -82,11 +82,11 @@ def replace_text(string):
         if parts[i] == "CHICO" or parts[i] == "FRSNO" or parts[i] == "FRATH":
             # Replace the BU code with the intended conditional value(s)
             if parts[1] == "CHICO":
-                parts[i] = "CHXCO"
+                parts[i] = "CHICO"
             elif parts[1] == "FRSNO":
-                parts[i] = "FRXNO"
+                parts[i] = "FRSNO"
             elif parts[1] == "FRATH":
-                parts[i] = "FRXTH"
+                parts[i] = "FRSNO"
             # Add more conditions if needed
 
     # Join the parts back into a string
