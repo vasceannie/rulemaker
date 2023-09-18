@@ -22,25 +22,25 @@ def transform_data():
 
     # Group by Rule Group and Rule Name
     for (sb_aprv_level, csu_calstedupersid, business_unit), group in df.groupby(['SB_APRV_LEVEL', 'CSU_CALSTEDUPERSID', 'BUSINESS_UNIT']):
-    
+
         rule_group_internal_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_display_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_description = ""  # Add description if needed
-        
+
         rule_internal_name = f"DOA RULE: {csu_calstedupersid}"
         rule_display_name = f"DOA RULE: {csu_calstedupersid}"
         rule_description = ""  # Add description if needed
-        
+
         rule_approvers = csu_calstedupersid  # Add approvers if needed
         implicit_approvers = ""  # Add implicit approvers if needed
         auto_approve = "FALSE"  # Set auto approve value if needed
         active = "TRUE"  # Set active value if needed
-        
+
         # Aggregate department IDs
-        deptids = "|".join([f"DeptID|oneOf|{'|'.join(group['DEPTID_CF'].unique())}"])
-        
+        deptids = f"DeptID|oneOf|{'|'.join(str(val) for val in group['DEPTID_CF'].unique())}"
+
         # Handle the spend values stored as text (assuming unique values per group)
-        spend_values = group['SB_LIMIT_AMT'].iloc[0].split('-')
+        spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
         if len(spend_values) == 1:
             lower_limit = 0.01
             upper_limit = float(spend_values[0])
@@ -48,13 +48,15 @@ def transform_data():
             lower_limit = float(spend_values[0]) + 0.01
             upper_limit = float(spend_values[1])
         document_total = f"Between|{lower_limit}|{upper_limit}|USD"
-        
-        #check for business unit, if it's chico, then the value is CHXCO, if it's fresno, then the value is FRXNO|FRXTH
+
+        #check for business unit, if it's chico, then the value is CHXCO, if it's FRSNO, then the value is FRXNO, if it's FRATH, then the value is FRXTH.
         if business_unit == "CHICO":
             business_unit = "oneOf|CHXCO"
-        elif business_unit == "FRESNO":
-            business_unit = "oneOf|FRXNO|FRXTH"
-        
+        elif business_unit == "FRSNO":
+            business_unit = "oneOf|FRXNO"
+        elif business_unit == "FRATH":
+            business_unit = "oneOf|FRXTH"
+
         # Append to the transformed data
         transformed_data.extend([
             [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
