@@ -74,25 +74,17 @@ def transform_data_OLD():
     progress_bar['value'] = 100
 
 def replace_text(string):
-    # Split a string into parts based on the presence of underscores
-    parts = string.split('_')
-    
-    # Iterate over the parts and replace the Business Unit code if the condition(s) are met
-    for i in range(1, len(parts)):
-        if parts[i] == "CHICO" or parts[i] == "FRSNO" or parts[i] == "FRATH":
-            # Replace the BU code with the intended conditional value(s)
-            if parts[1] == "CHICO":
-                parts[i] = "CHICO"
-            elif parts[1] == "FRSNO":
-                parts[i] = "FRSNO"
-            elif parts[1] == "FRATH":
-                parts[i] = "FRSNO"
-            # Add more conditions if needed
-
-    # Join the parts back into a string
-    new_string = '_'.join(parts)
-    
-    return new_string
+    if string == "CHICO" or string == "FRSNO" or string == "FRATH":
+        # Replace the BU code with the intended conditional value(s)
+        if string == "CHICO":
+            string = "CHICO"
+        elif string == "FRSNO":
+            string = "FRSNO"
+        elif string == "FRATH":
+            string = "FRSNO"
+        # Add more conditions if needed
+        
+    return string
 
 def modified_transform_data():
     """Function to process the source file and save the output."""
@@ -119,9 +111,9 @@ def modified_transform_data():
         active = "TRUE"  # Set active value if needed
 
         # Aggregate department IDs with business unit suffix found in the source data
-        deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + business_unit for val in group['DEPTID_CF'].unique()])}"
+        deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + replace_text(business_unit) for val in group['DEPTID_CF'].unique()])}"
         # Replace the business unit suffix from the source data and insert intended values for import
-        deptids = replace_text(deptids)
+        print(deptids)
 
         # Handle the spend values stored as text (assuming unique values per group)
         spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
