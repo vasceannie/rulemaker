@@ -124,7 +124,7 @@ def modified_transform_data():
                 rule_display_name_chunk = f"{rule_display_name}{rule_suffix}"
 
                 # Aggregate department IDs for this chunk
-                deptids_chunk = f"DeptID|oneOf|{'|'.join([str(val) + '_' + (business_unit.split('|')[1] if len(business_unit.split('|')) > 1 else business_unit) for val in chunk_deptids])}"
+                deptids_chunk = f"DeptID|oneOf|{'|'.join([str(val) + '_' + replace_text(business_unit) for val in chunk_deptids])}"
                 print(deptids_chunk)
 
                 # Handle the spend values stored as text (assuming unique values per group)
@@ -152,7 +152,7 @@ def modified_transform_data():
                 ])
         else:
             # If deptids has 49 or fewer elements, no need to split
-            deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + business_unit for val in deptids])}"
+            deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + replace_text(business_unit) for val in deptids])}"
 
             # Handle the spend values stored as text (assuming unique values per group)
             spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
