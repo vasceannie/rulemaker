@@ -124,7 +124,7 @@ def modified_transform_data():
                 rule_display_name_chunk = f"{rule_display_name}{rule_suffix}"
 
                 # Aggregate department IDs for this chunk
-                deptids_chunk = f"DeptID|oneOf|{'|'.join([str(val) + '_' + replace_text(business_unit) for val in chunk_deptids])}"
+                deptids_chunk = f"DeptID|oneOf|{'|'.join([str(val) + '_' + (replace_text(business_unit).split('|')[1] if len(business_unit.split('|')) > 1 else replace_text(business_unit)) for val in chunk_deptids])}"
                 print(deptids_chunk)
 
                 # Handle the spend values stored as text (assuming unique values per group)
