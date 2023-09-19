@@ -88,7 +88,7 @@ def replace_text(string):
 
 def modified_transform_data():
     """Function to process the source file and save the output."""
-    # Read the source file ensuring SB_LIMIT_AMT is read as string
+    # Read the source file ensuring SB_LIMIT_AMT is read as a string
     df = pd.read_csv(source_file_path.get(), dtype={'SB_LIMIT_AMT': str})
 
     # Placeholder for transformed data
@@ -96,7 +96,6 @@ def modified_transform_data():
 
     # Group by Rule Group, Rule Name, and Business Unit
     for (sb_aprv_level, csu_calstedupersid, business_unit), group in df.groupby(['SB_APRV_LEVEL', 'CSU_CALSTEDUPERSID', 'BUSINESS_UNIT']):
-
         rule_group_internal_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_display_name = f"DOA Approval: Level {sb_aprv_level}"
         rule_group_description = ""  # Add description if needed
@@ -110,37 +109,74 @@ def modified_transform_data():
         auto_approve = "FALSE"  # Set auto approve value if needed
         active = "TRUE"  # Set active value if needed
 
-        # Aggregate department IDs with business unit suffix found in the source data
-        deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + replace_text(business_unit) for val in group['DEPTID_CF'].unique()])}"
-        # Replace the business unit suffix from the source data and insert intended values for import
-        print(deptids)
+        # Get unique department IDs for this group
+        deptids = group['DEPTID_CF'].unique()
 
-        # Handle the spend values stored as text (assuming unique values per group)
-        spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
-        if len(spend_values) == 1:
-            lower_limit = 0.01
-            upper_limit = float(spend_values[0])
+        # Check if deptids has more than 49 elements
+        if len(deptids) > 49:
+            # If deptids has more than 49 elements, split it into chunks of 49
+            for i in range(0, len(deptids), 49):
+                chunk_deptids = deptids[i:i+49]
+                
+                # Create a new line with appended suffix to rule_internal_name and rule_display_name
+                rule_suffix = f":{i//49 + 2:02}"  # Increment the suffix
+                rule_internal_name_chunk = f"{rule_internal_name}{rule_suffix}"
+                rule_display_name_chunk = f"{rule_display_name}{rule_suffix}"
+
+                # Aggregate department IDs for this chunk
+                deptids_chunk = f"DeptID|oneOf|{'|'.join([str(val) + '_' + (business_unit.split('|')[1] if len(business_unit.split('|')) > 1 else business_unit) for val in chunk_deptids])}"
+                print(deptids_chunk)
+
+                # Handle the spend values stored as text (assuming unique values per group)
+                spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
+                if len(spend_values) == 1:
+                    lower_limit = 0.01
+                    upper_limit = float(spend_values[0])
+                else:
+                    lower_limit = float(spend_values[0])
+                    upper_limit = float(spend_values[1])
+                # Create the DocumentTotal value
+                document_total = f"Between|{lower_limit}|{upper_limit}|USD"
+                # Check for business unit
+                if business_unit == "CHICO":
+                    business_unit = "oneOf|CHXCO"
+                elif business_unit == "FRSNO":
+                    business_unit = "oneOf|FRXNO"
+                elif business_unit == "FRATH":
+                    business_unit = "oneOf|FRXTH"
+                # Append to the transformed data
+                transformed_data.extend([
+                    [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name_chunk, rule_display_name_chunk, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
+                    [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name_chunk, rule_display_name_chunk, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueMulti", deptids_chunk],
+                    [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name_chunk, rule_display_name_chunk, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "BusinessUnit", business_unit]
+                ])
         else:
-            lower_limit = float(spend_values[0])
-            upper_limit = float(spend_values[1])
+            # If deptids has 49 or fewer elements, no need to split
+            deptids = f"DeptID|oneOf|{'|'.join([str(val) + '_' + business_unit for val in deptids])}"
 
-        # Create the DocumentTotal value
-        document_total = f"Between|{lower_limit}|{upper_limit}|USD"
-        
-        # Check for business unit, if it's chico, then the value is CHXCO, if it's FRSNO, then the value is FRXNO, if it's FRATH, then the value is FRXTH.
-        if business_unit == "CHICO":
-            business_unit = "oneOf|CHXCO"
-        elif business_unit == "FRSNO":
-            business_unit = "oneOf|FRXNO"
-        elif business_unit == "FRATH":
-            business_unit = "oneOf|FRXTH"
-
-        # Append to the transformed data
-        transformed_data.extend([
-            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
-            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueMulti", deptids],
-            [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "BusinessUnit", business_unit]
-        ])
+            # Handle the spend values stored as text (assuming unique values per group)
+            spend_values = str(group['SB_LIMIT_AMT'].iloc[0]).split('-')
+            if len(spend_values) == 1:
+                lower_limit = 0.01
+                upper_limit = float(spend_values[0])
+            else:
+                lower_limit = float(spend_values[0])
+                upper_limit = float(spend_values[1])
+            # Create the DocumentTotal value
+            document_total = f"Between|{lower_limit}|{upper_limit}|USD"
+            # Check for business unit
+            if business_unit == "CHICO":
+                business_unit = "oneOf|CHXCO"
+            elif business_unit == "FRSNO":
+                business_unit = "oneOf|FRXNO"
+            elif business_unit == "FRATH":
+                business_unit = "oneOf|FRXTH"
+            # Append to the transformed data
+            transformed_data.extend([
+                [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "DocumentTotal", document_total],
+                [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "CustomFieldValueMulti", deptids],
+                [rule_group_internal_name, rule_group_display_name, rule_group_description, rule_internal_name, rule_display_name, rule_description, rule_approvers, implicit_approvers, auto_approve, active, "BusinessUnit", business_unit]
+            ])
 
     # Create a DataFrame from the transformed data
     output_df = pd.DataFrame(transformed_data, columns=["Rule Group Internal Name", "Rule Group Display Name", "Rule Group Description", "Rule Internal Name", "Rule Display Name", "Rule Description", "Rule Approvers", "Implicit Approvers", "Auto Approve", "Active", "Type", "Value"])
@@ -150,6 +186,8 @@ def modified_transform_data():
 
     # Update the progress bar
     progress_bar['value'] = 100
+
+
     
 # Create main application window
 root = tk.Tk()
