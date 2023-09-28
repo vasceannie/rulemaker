@@ -18,13 +18,15 @@ def select_output_file():
     path = filedialog.asksaveasfilename(title="Select Output CSV Location", defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
     output_file_path.set(path)
 
+# function that defines the limits for each business unit and corresponding approval level
 def calculate_limits(business_unit, sb_aprv_level):
     limits = {
         "CHICO": {
-            1: (100000.01, 999999999.99),
-            2: (20000.01, 100000.00),
-            3: (500.01, 20000.00),
-            4: (0.01, 500.00)
+            1: (50000000.01, 999999999.99),
+            2: (100000.01, 50000000.00),
+            3: (20000.01, 100000.00),
+            4: (500.01, 20000.00),
+            5: (0.00, 500.00)
         },
         "FRSNO": {
             1: (100000.01, 999999999.99),
